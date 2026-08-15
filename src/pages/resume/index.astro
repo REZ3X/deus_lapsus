@@ -1,0 +1,477 @@
+---
+import "@fontsource/inter/latin-400.css";
+import "@fontsource/inter/latin-500.css";
+import "@fontsource/inter/latin-600.css";
+import "@fontsource/inter/latin-700.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Resume | Rejaka Abimanyu Susanto</title>
+    <meta name="description" content="CV / Resume of Rejaka Abimanyu Susanto, a full-stack developer from Yogyakarta, Indonesia." />
+    <link rel="icon" type="image/x-icon" href="/favicon-light.svg" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: #ffffff;
+        color: #000000;
+        font-family: "Inter", -apple-system, "Segoe UI", sans-serif;
+        line-height: 1.6;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .resume-page-wrapper {
+        min-height: 100vh;
+        background-color: #ffffff;
+        color: #000000;
+        padding: 40px 20px;
+      }
+      .resume-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 40px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .resume-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #000000;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+      }
+      .resume-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        margin: 0 0 5px 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .resume-header h2 {
+        font-size: 18px;
+        font-weight: 500;
+        color: #555555;
+        margin: 0 0 15px 0;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+      }
+      .contact-block {
+        font-size: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .resume-header-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid #000000;
+        flex-shrink: 0;
+      }
+      .resume-header-image img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .resume-section { margin-bottom: 30px; }
+      .resume-section h3 {
+        font-size: 18px;
+        font-weight: 700;
+        text-transform: uppercase;
+        border-bottom: 1px solid #dddddd;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+        letter-spacing: 1px;
+      }
+      .resume-section p { font-size: 14px; margin-top: 0; }
+      .skills-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        font-size: 14px;
+      }
+      .languages-block {
+        font-size: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .experience-entry { margin-bottom: 20px; }
+      .experience-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .experience-flex h4 {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0 0 5px 0;
+      }
+      .experience-period {
+        font-size: 13px;
+        color: #555555;
+        font-weight: 600;
+      }
+      .experience-role {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333333;
+        margin-bottom: 8px;
+      }
+      .experience-list { font-size: 14px; margin: 0; padding-left: 20px; }
+      .achievement-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      .achievement-entry h4 {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0 0 3px 0;
+      }
+      .achievement-issuer {
+        font-size: 13px;
+        font-weight: 600;
+        color: #333333;
+        margin-bottom: 3px;
+      }
+      .achievement-entry p { font-size: 13px; margin: 0; }
+      .education-entry { margin-bottom: 12px; }
+      .education-entry h4 {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0 0 3px 0;
+      }
+      .resume-controls {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 100;
+      }
+      .print-button {
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        font-family: inherit;
+      }
+      .print-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      }
+      .resume-nav {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 100;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .resume-nav a {
+        color: #ffffff;
+        background-color: #000000;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: 50px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .resume-nav a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      }
+      @media print {
+        @page {
+          size: A4 portrait;
+          margin: 1.5cm;
+        }
+        body {
+          background: #fff !important;
+          padding: 0 !important;
+        }
+        .resume-page-wrapper {
+          background: #fff !important;
+          padding: 0 !important;
+        }
+        .resume-container {
+          box-shadow: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          max-width: 100% !important;
+          width: 100% !important;
+        }
+        .resume-controls,
+        .resume-nav {
+          display: none !important;
+        }
+        .print-avoid-break {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        .resume-section h3 {
+          page-break-after: avoid;
+          break-after: avoid;
+          margin-top: 15px;
+        }
+      }
+      @media screen and (max-width: 768px) {
+        .resume-page-wrapper { padding: 15px 10px !important; }
+        .resume-container { padding: 20px !important; }
+        .resume-header {
+          flex-direction: column !important;
+          text-align: center !important;
+          gap: 20px !important;
+        }
+        .resume-header > div:first-child { order: 2; }
+        .resume-header-image { order: 1; margin: 0 auto; }
+        .skills-grid { grid-template-columns: 1fr !important; gap: 15px !important; }
+        .experience-flex { flex-direction: column !important; align-items: flex-start !important; gap: 2px !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="resume-page-wrapper">
+      <div class="resume-controls">
+        <button class="print-button" onclick="window.print()" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print / Save PDF
+        </button>
+      </div>
+
+      <div class="resume-nav">
+        <a href="/">← Back to site</a>
+      </div>
+
+      <div class="resume-container">
+        <!-- HEADER -->
+        <header class="resume-header">
+          <div>
+            <h1>Rejaka <span style="font-weight: 300;">Abimanyu Susanto</span></h1>
+            <h2>Full-Stack Developer</h2>
+
+            <div class="contact-block">
+              <div><strong>Email:</strong> abim@rejaka.id</div>
+              <div><strong>Phone:</strong> +62 831-0739-3837</div>
+              <div><strong>LinkedIn:</strong> linkedin.com/in/rejaka-me</div>
+              <div><strong>Web:</strong> www.rejaka.id</div>
+              <div><strong>Location:</strong> Yogyakarta, Indonesia</div>
+            </div>
+          </div>
+
+          <div class="resume-header-image">
+            <img src="/assets/rez3x.jpeg" alt="Rejaka Abimanyu Susanto" />
+          </div>
+        </header>
+
+        <!-- ABOUT ME -->
+        <section class="resume-section print-avoid-break">
+          <h3>About Me</h3>
+          <p>
+            I am a student of SMKN 2 Depok Sleman with a strong interest in
+            fullstack development and team management. Experienced with modern
+            tech stacks such as Next.js, React, and Axum, I am also passionate
+            about system and database design. I actively lead and develop
+            projects, learn quickly, and am eager to take on new challenges.
+          </p>
+        </section>
+
+        <!-- SKILLS -->
+        <section class="resume-section print-avoid-break">
+          <h3>Skills</h3>
+          <div class="skills-grid">
+            <div><strong>Web Development:</strong> Next.js, React, Tailwind CSS</div>
+            <div><strong>Backend Development:</strong> REST API, Express, Axum</div>
+            <div><strong>Database & System Design:</strong> ERD, Workflow Planning</div>
+            <div><strong>Core Competencies:</strong> Team Leadership, Quick Learner</div>
+          </div>
+        </section>
+
+        <!-- LANGUAGES -->
+        <section class="resume-section print-avoid-break">
+          <h3>Languages</h3>
+          <div class="languages-block">
+            <div><strong>Indonesia:</strong> Native</div>
+            <div><strong>English:</strong> Professional</div>
+            <div><strong>German:</strong> Basic</div>
+          </div>
+        </section>
+
+        <!-- EXPERIENCE -->
+        <section class="resume-section">
+          <h3>Experience</h3>
+
+          <div class="experience-entry print-avoid-break">
+            <div class="experience-flex">
+              <h4>PT Botika Teknologi Indonesia</h4>
+              <span class="experience-period">July 2026 - Present</span>
+            </div>
+            <div class="experience-role">Fullstack Developer Intern</div>
+          </div>
+
+          <div class="experience-entry print-avoid-break">
+            <div class="experience-flex">
+              <h4>Slaviors</h4>
+              <span class="experience-period">July 2025 - January 2026</span>
+            </div>
+            <div class="experience-role">Freelance Full-Stack Developer</div>
+            <ul class="experience-list">
+              <li>
+                Database design (ERD) and workflow planning for system and
+                client requirements.
+              </li>
+              <li>
+                Building and managing systems used by clients, including
+                frontend and backend integration.
+              </li>
+              <li>
+                Leading the development team, distributing work scope, and
+                ensuring optimal and efficient team performance.
+              </li>
+            </ul>
+          </div>
+
+          <div class="experience-entry print-avoid-break">
+            <div class="experience-flex">
+              <h4>Web Developer – Karyasija (Volunteer)</h4>
+              <span class="experience-period">July 2025 - Oktober 2025</span>
+            </div>
+            <div class="experience-role">SMKN 2 Depok Sleman</div>
+            <ul class="experience-list">
+              <li>
+                Become a web dev in Karyasija as one of the developer to
+                maintain the codebase of SMKN 2 Depok Sleman Website.
+              </li>
+            </ul>
+          </div>
+
+          <div class="experience-entry print-avoid-break">
+            <div class="experience-flex">
+              <h4>Student Discipline Team</h4>
+              <span class="experience-period">October 2024 - November 2025</span>
+            </div>
+            <div class="experience-role">Coordinator</div>
+            <ul class="experience-list">
+              <li>
+                Led and coordinated 35 TaSis division members under the student
+                council.
+              </li>
+              <li>
+                Contributed to security and disciplinary operations at various
+                school events.
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- ACHIEVEMENTS -->
+        <section class="resume-section">
+          <h3>Achievements</h3>
+          <div class="achievement-list">
+            <div class="achievement-entry print-avoid-break">
+              <div class="experience-flex">
+                <h4>3rd Place - TechSprint Web Development Competition</h4>
+                <span class="experience-period">2026</span>
+              </div>
+              <div class="achievement-issuer">CodeLab Indonesia</div>
+              <p>
+                Secured 3rd place in National multi entry (High Schooler and College Student) Web Development Competition held by CodeLab Indonesia. My product is a Civic Community Platform, built using Next.js and Rust.
+              </p>
+            </div>
+
+            <div class="achievement-entry print-avoid-break">
+              <div class="experience-flex">
+                <h4>Finalist – Web Development, National Competition Silogy Expo</h4>
+                <span class="experience-period">2025</span>
+              </div>
+              <div class="achievement-issuer">
+                Himpunan Mahasiswa Sistem Informasi, Universitas Singaperbangsa Karawang
+              </div>
+              <p>
+                Selected as a finalist in the national-level Silogy Expo web development competition, highlighting innovation and frontend proficiency.
+              </p>
+            </div>
+
+            <div class="achievement-entry print-avoid-break">
+              <div class="experience-flex">
+                <h4>Top 10 – ByProject Student Web Dev Competition</h4>
+                <span class="experience-period">2025</span>
+              </div>
+              <div class="achievement-issuer">Universitas Teknologi Yogyakarta</div>
+              <p>
+                Secured a position among the top ten student teams in the ByProject Web Development category, demonstrating strong coding and collaborative skills.
+              </p>
+            </div>
+
+            <div class="achievement-entry print-avoid-break">
+              <div class="experience-flex">
+                <h4>Finalist – Sagasitas Web Building Competition</h4>
+                <span class="experience-period">2024</span>
+              </div>
+              <div class="achievement-issuer">Sagasitas Indonesia</div>
+              <p>
+                Led development of an accessibility‑focused web application, earning finalist status in the national Web Building competition.
+              </p>
+            </div>
+
+            <div class="achievement-entry print-avoid-break">
+              <div class="experience-flex">
+                <h4>1st Place – National Digital Hero Competition</h4>
+                <span class="experience-period">2024</span>
+              </div>
+              <div class="achievement-issuer">PT. ITHO INDOSTOCK</div>
+              <p>
+                Awarded first place for deploying an AI‑powered solution addressing a real company problem in the National Digital Hero competition.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- EDUCATION -->
+        <section class="resume-section">
+          <h3>Education</h3>
+
+          <div class="education-entry print-avoid-break">
+            <div class="experience-flex">
+              <h4>SMKN 2 DEPOK SLEMAN</h4>
+              <span class="experience-period">2023 - 2027</span>
+            </div>
+            <div style="font-size: 14px;">Sistem Informasi Jaringan & Aplikasi (SIJA)</div>
+          </div>
+
+          <div class="education-entry print-avoid-break">
+            <div class="experience-flex">
+              <h4>SMPN 6 YOGYAKARTA</h4>
+              <span class="experience-period">2020 - 2023</span>
+            </div>
+          </div>
+
+          <div class="education-entry print-avoid-break">
+            <div class="experience-flex">
+              <h4>SDN GLAGAH</h4>
+              <span class="experience-period">2014 - 2020</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

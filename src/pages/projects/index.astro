@@ -1,0 +1,66 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import ArrowCard from "@components/ArrowCard.astro";
+import { PROJECTS } from "@consts";
+
+const data = (await getCollection("projects"))
+  .filter(project => !project.data.draft);
+
+type Acc = {
+  [year: string]: CollectionEntry<"projects">[];
+};
+
+const grouped = data.reduce((acc: Acc, project) => {
+  const year = project.data.year?.toString() ?? "Unsorted";
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(project);
+  return acc;
+}, {});
+
+const years = Object.keys(grouped).sort((a, b) => parseInt(b) - parseInt(a));
+---
+
+<PageLayout title={PROJECTS.TITLE} description={PROJECTS.DESCRIPTION}>
+  <Container>
+    <div class="space-y-10">
+      <div class="animate font-semibold text-black dark:text-white">
+        Projects
+      </div>
+      <div class="space-y-10">
+        {years.map((year) => (
+          <section class="animate space-y-4">
+            <div class="font-semibold text-black dark:text-white">
+              {year}
+            </div>
+            <ul class="flex flex-col gap-4" data-shuffle-group>
+              {grouped[year].map((project) => (
+                <li>
+                  <ArrowCard entry={project} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
+  </Container>
+</PageLayout>
+
+<script>
+  function shuffleGroups() {
+    document.querySelectorAll<HTMLUListElement>("[data-shuffle-group]").forEach((list) => {
+      const items = Array.from(list.children);
+      for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [items[i], items[j]] = [items[j], items[i]];
+      }
+      items.forEach((item) => list.appendChild(item));
+    });
+  }
+
+  shuffleGroups();
+  document.addEventListener("astro:page-load", shuffleGroups);
+</script>
+</PageLayout>

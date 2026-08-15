@@ -1,0 +1,192 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+
+type Achievement = {
+  title: string;
+  issuer: string;
+  year: string;
+  description: string;
+  image: string;
+};
+
+const achievements: Achievement[] = [
+  {
+    title: "3rd Place - TechSprint Web Development Competition",
+    issuer: "CodeLab Indonesia",
+    year: "2026",
+    description:
+      "Secured 3rd place in National multi entry (High Schooler and College Student) Web Development Competition held by CodeLab Indonesia. My product is a Civic Community Platform, built using Next.js and Rust.",
+    image: "/assets/techsprint.png",
+  },
+  {
+    title: "Finalist – Web Development, National Competition Silogy Expo",
+    issuer:
+      "Himpunan Mahasiswa Sistem Informasi, Universitas Singaperbangsa Karawang",
+    year: "2025",
+    description:
+      "Selected as a finalist in the national-level Silogy Expo web development competition, highlighting innovation and frontend proficiency.",
+    image: "/assets/silogy.jpeg",
+  },
+  {
+    title: "Top 10 – ByProject Student Web Dev Competition",
+    issuer: "Universitas Teknologi Yogyakarta",
+    year: "2025",
+    description:
+      "Secured a position among the top ten student teams in the ByProject Web Development category, demonstrating strong coding and collaborative skills.",
+    image: "/assets/pemrograman_by_project.jpeg",
+  },
+  {
+    title: "Finalist – Sagasitas Web Building Competition",
+    issuer: "Sagasitas Indonesia",
+    year: "2024",
+    description:
+      "Led development of an accessibility‑focused web application, earning finalist status in the national Web Building competition.",
+    image: "/assets/gss.png",
+  },
+  {
+    title: "1st Place – National Digital Hero Competition",
+    issuer: "PT. ITHO INDOSTOCK",
+    year: "2024",
+    description:
+      "Awarded first place for deploying an AI‑powered solution addressing a real company problem in the National Digital Hero competition.",
+    image: "/assets/kpdn.png",
+  },
+];
+
+type Acc = { [year: string]: Achievement[] };
+
+const grouped = achievements.reduce((acc: Acc, item) => {
+  if (!acc[item.year]) acc[item.year] = [];
+  acc[item.year].push(item);
+  return acc;
+}, {});
+
+const years = Object.keys(grouped).sort((a, b) => parseInt(b) - parseInt(a));
+
+const TITLE = "Achievements";
+const DESCRIPTION = "A collection of my achievements in web development competitions.";
+---
+
+<PageLayout title={TITLE} description={DESCRIPTION}>
+  <Container>
+    <div class="space-y-10">
+      <div class="animate font-semibold text-black dark:text-white">
+        Achievements
+      </div>
+      <div class="space-y-10">
+        {years.map((year) => (
+          <section class="animate space-y-4">
+            <div class="font-semibold text-black dark:text-white">
+              {year}
+            </div>
+            <ul class="flex flex-col gap-4">
+              {grouped[year].map((achievement) => (
+                <li>
+                  <button
+                    type="button"
+                    data-achv-trigger
+                    data-image={achievement.image}
+                    data-title={achievement.title}
+                    class="w-full text-left flex flex-col sm:flex-row gap-4 rounded-lg border border-black/15 dark:border-white/20 p-4 transition-colors hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+                  >
+                    <img
+                      src={achievement.image}
+                      alt={achievement.title}
+                      loading="lazy"
+                      class="w-full sm:w-40 h-28 shrink-0 rounded-md object-cover border border-black/10 dark:border-white/10"
+                    />
+                    <div class="flex-1 space-y-1">
+                      <div class="font-semibold text-black dark:text-white leading-snug">
+                        {achievement.title}
+                      </div>
+                      <div class="text-sm opacity-75">
+                        {achievement.issuer}
+                      </div>
+                      <p class="text-sm opacity-75 leading-relaxed">
+                        {achievement.description}
+                      </p>
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
+  </Container>
+
+  <!-- Modal -->
+  <div
+    id="achv-modal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4"
+  >
+    <button
+      id="achv-modal-close"
+      type="button"
+      aria-label="Close"
+      class="absolute top-4 right-4 sm:top-6 sm:right-6 flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <img
+      id="achv-modal-img"
+      src=""
+      alt=""
+      class="max-h-[85vh] max-w-full rounded-lg object-contain shadow-2xl"
+    />
+  </div>
+</PageLayout>
+
+<script>
+  function initAchievementsModal() {
+    const modal = document.getElementById("achv-modal");
+    const modalImg = document.getElementById("achv-modal-img") as HTMLImageElement | null;
+    const closeBtn = document.getElementById("achv-modal-close");
+    const triggers = document.querySelectorAll<HTMLButtonElement>("[data-achv-trigger]");
+
+    if (!modal || !modalImg || !closeBtn) return;
+
+    function openModal(image: string, title: string) {
+      modalImg!.src = image;
+      modalImg!.alt = title;
+      modal!.classList.remove("hidden");
+      modal!.classList.add("flex");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      modal!.classList.add("hidden");
+      modal!.classList.remove("flex");
+      modalImg!.src = "";
+      document.body.style.overflow = "";
+    }
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        const image = trigger.dataset.image;
+        const title = trigger.dataset.title ?? "";
+        if (image) openModal(image, title);
+      });
+    });
+
+    closeBtn.addEventListener("click", closeModal);
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal!.classList.contains("hidden")) {
+        closeModal();
+      }
+    });
+  }
+
+  initAchievementsModal();
+  document.addEventListener("astro:page-load", initAchievementsModal);
+</script>

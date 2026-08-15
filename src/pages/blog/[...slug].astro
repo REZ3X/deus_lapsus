@@ -1,0 +1,79 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+import { formatDate, readingTime } from "@lib/utils";
+import BackToPrev from "@components/BackToPrev.astro";
+
+export async function getStaticPaths() {
+  const posts = (await getCollection("blog"))
+    .filter(post => !post.data.draft)
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: post,
+  }));
+}
+type Props = CollectionEntry<"blog">;
+
+const post = Astro.props;
+const { Content } = await post.render();
+---
+
+<PageLayout title={post.data.title} description={post.data.description}>
+  <Container>
+    <div class="animate">
+      <BackToPrev href="/blog">
+        Back to blog
+      </BackToPrev>
+    </div>
+    <div class="space-y-1 my-10">
+      <div class="animate flex items-center gap-1.5 flex-wrap">
+        <div class="font-base text-sm">
+          <FormattedDate date={post.data.date} />
+        </div>
+        &bull;
+        <div class="font-base text-sm">
+          {readingTime(post.body)}
+        </div>
+        {post.data.category && (
+          <>
+            &bull;
+            <div class="font-base text-sm opacity-75">
+              {post.data.category}
+            </div>
+          </>
+        )}
+      </div>
+      <div class="animate text-2xl font-semibold text-black dark:text-white">
+        {post.data.title}
+      </div>
+      {post.data.lastModified && (
+        <div class="font-base text-xs opacity-50">
+          Last modified: {formatDate(post.data.lastModified)}
+        </div>
+      )}
+      {post.data.tags && post.data.tags.length > 0 && (
+        <div class="animate flex flex-wrap gap-2 pt-2">
+          {post.data.tags.map((tag) => (
+            <span class="text-xs px-2 py-1 rounded border border-black/10 dark:border-white/20 opacity-75">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+    {post.data.coverImage && (
+      <img
+        src={post.data.coverImage}
+        alt={`Cover image for ${post.data.title}`}
+        class="animate rounded-lg border border-black/10 dark:border-white/20 w-full max-h-96 object-contain mb-8"
+        loading="lazy"
+      />
+    )}
+    <article class="animate">
+      <Content />
+    </article>
+  </Container>
+</PageLayout>
