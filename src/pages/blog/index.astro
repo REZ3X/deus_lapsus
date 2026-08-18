@@ -5,9 +5,14 @@ import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 import { BLOG } from "@consts";
 
-const data = (await getCollection("blog"))
+const rawData = (await getCollection("blog"))
   .filter((post) => !post.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const data = rawData.map(post => ({
+  ...post,
+  slug: post.id.replace(/\\/g, "/").replace(/\/?index\.md$/, "")
+}));
 
 type Acc = {
   [year: string]: CollectionEntry<"blog">[];

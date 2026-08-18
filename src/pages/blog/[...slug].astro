@@ -10,10 +10,24 @@ export async function getStaticPaths() {
   const posts = (await getCollection("blog"))
     .filter(post => !post.data.draft)
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-    props: post,
-  }));
+
+  function getSlugVariants(id: string): string[] {
+    const camel = id.replace(/\\/g, "/").replace(/\/?index\.md$/, "");
+    const lower = camel.toLowerCase();
+    const kebab = camel
+      .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+      .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
+      .toLowerCase();
+    return Array.from(new Set([camel, lower, kebab]));
+  }
+
+  return posts.flatMap((post) => {
+    const slugVariants = getSlugVariants(post.id);
+    return slugVariants.map((slug) => ({
+      params: { slug },
+      props: post,
+    }));
+  });
 }
 type Props = CollectionEntry<"blog">;
 

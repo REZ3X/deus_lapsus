@@ -13,12 +13,15 @@ export async function GET(context: Context) {
   const projects = (await getCollection("projects"))
     .filter(project => !project.data.draft);
 
-  const blogItems = blog.map((post) => ({
-    title: post.data.title,
-    description: post.data.description,
-    pubDate: post.data.date,
-    link: `/blog/${post.slug}/`,
-  }));
+  const blogItems = blog.map((post) => {
+    const slug = post.id.replace(/\\/g, "/").replace(/\/?index\.md$/, "");
+    return {
+      title: post.data.title,
+      description: post.data.description,
+      pubDate: post.data.date,
+      link: `/blog/${slug}/`,
+    };
+  });
 
   const projectItems = projects.map((project) => ({
     title: project.data.title,
