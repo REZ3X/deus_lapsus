@@ -1,0 +1,46 @@
+# Rejaka Abimanyu Susanto
+
+> Full-stack developer and tech enthusiast based in Yogyakarta, Indonesia. MTCNA certified, student at SMKN 2 Depok Sleman (Information System, Networking, and Application), currently a Fullstack Developer Intern at PT Botika Teknologi Indonesia. Builds comprehensive, reliable web systems using Next.js, React, Axum, and Rust. Open for freelance work.
+
+This site is a personal portfolio featuring a blog, project showcase, work experience, achievements, and resume — built as a fast, static site with Astro, Tailwind CSS, and TypeScript.
+
+## Pages
+
+- [Home](https://rejaka.id/): Introduction, latest blog posts, work experience, and featured projects.
+- [Blog](https://rejaka.id/blog): Technical articles on web development, networking, IoT, and cybersecurity.
+- [Projects](https://rejaka.id/projects): Showcase of web, mobile, and tooling projects with links to live demos and repositories.
+- [Work](https://rejaka.id/work): Professional and volunteer work experience history.
+- [Achievements](https://rejaka.id/achievements): Competition placements and recognitions in web development.
+- [Resume](https://rejaka.id/resume): Downloadable/printable CV with skills, experience, education, and achievements.
+
+## Blog posts
+
+- [Smart Hydroponic: IoT-Based Monitoring and Control System](https://rejaka.id/blog/smarthydroponic): Building a 24/7 automated hydroponic monitoring and pump-control system using ESP8266, sensors, MQTT, n8n, and a Gemini-powered Telegram bot.
+- [System Prompt for n8n Hydroponic AI Agent](https://rejaka.id/blog/n8nsystemprompt): System prompt design for an n8n-based hydroponic AI agent (Indonesian language).
+- [n8n JSON Template for Hydroponic Monitoring and Control System](https://rejaka.id/blog/n8njson): Ready-to-import n8n JSON workflow template for hydroponic monitoring and control.
+- [MikroTik Firewall Filter Rules: Allow, Drop, and Access Control](https://rejaka.id/blog/mikrotikFirewall): Two-router lab walkthrough covering static routing, NAT, and firewall filter rules with real test results.
+- [Mail Server Explained: How Email Actually Works Behind the Scenes](https://rejaka.id/blog/mailServer): Breakdown of MUA, MTA, and MDA roles and how email travels between domains.
+- [CIA Triad Explained: The Foundation of Cybersecurity](https://rejaka.id/blog/CIA): Confidentiality, Integrity, and Availability fundamentals with real-world case studies including a ransomware attack analysis.
+- [How to Install Go Version Manager (GVM) on Linux](https://rejaka.id/blog/gvmInstall): Step-by-step guide to installing and using GVM to manage multiple Go versions.
+- [Node Version Manager (NVM) Tutorial on Linux](https://rejaka.id/blog/nvmTutorial): Installing and using NVM to manage multiple Node.js versions.
+- [Free Services Every Developer Should Know About](https://rejaka.id/blog/freeDevServices): Curated list of free developer tools and services (databases, VPS hosting, image CDN, and more).
+
+## Featured projects
+
+- [JaMak: Jaringan Masyarakat (Community Network)](https://rejaka.id/projects/jamak): Community network platform improving connectivity and access to services in rural areas.
+- [Rejaka F1](https://rejaka.id/projects/rejaka_f1): Formula 1 information platform with race schedules, driver and constructor standings, built with Next.js, MariaDB, and TypeScript.
+- [NKPol Profile Website](https://rejaka.id/projects/nkpol_profile): Profile website for the NKPol event booth organizer.
+- [JogjaWaskita](https://rejaka.id/projects/jogjawaskita): Civic engagement platform with agentic AI-assisted public issue reporting and government analytics dashboards, built with Next.js, Axum, MariaDB, and Rust.
+- [Blessedly](https://rejaka.id/projects/blessedly): AI-powered mental health companion with journaling, mood tracking, and emotional support, built with Axum, MariaDB, and Rust.
+- [Alimentify](https://rejaka.id/projects/alimentify): AI-powered meal nutrition analyzer with an AI agent for diet guidance, built with Next.js, MongoDB, Axum, and Rust.
+
+## Contact
+
+- Email: abim@rejaka.id
+- GitHub: https://github.com/REZ3X
+- LinkedIn: https://www.linkedin.com/in/rejaka-me/
+- Instagram: https://instagram.com/rejakasusanto
+
+## Notes
+
+This file was generated based on publicly indexed and crawled content as of August 2026. Some pages (full project list, full blog archive) may not be fully reflected here — review and expand this file directly against your Astro content collections (`src/content/blog`, `src/content/projects`, `src/content/work`, `src/content/achievements`) for completeness before publishing.
