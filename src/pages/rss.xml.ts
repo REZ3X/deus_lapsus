@@ -8,23 +8,34 @@ type Context = {
 
 export async function GET(context: Context) {
   const blog = (await getCollection("blog"))
-  .filter(post => !post.data.draft);
+    .filter(post => !post.data.draft);
 
   const projects = (await getCollection("projects"))
     .filter(project => !project.data.draft);
 
-  const items = [...blog, ...projects]
-    .sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf());
+  const blogItems = blog.map((post) => ({
+    title: post.data.title,
+    description: post.data.description,
+    pubDate: post.data.date,
+    link: `/blog/${post.slug}/`,
+  }));
+
+  const projectItems = projects.map((project) => ({
+    title: project.data.title,
+    description: project.data.description,
+    pubDate: project.data.year
+      ? new Date(project.data.year, 0, 1)
+      : new Date(0),
+    link: `/projects/${project.slug}/`,
+  }));
+
+  const items = [...blogItems, ...projectItems]
+    .sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
 
   return rss({
     title: HOME.TITLE,
     description: HOME.DESCRIPTION,
     site: context.site,
-    items: items.map((item) => ({
-      title: item.data.title,
-      description: item.data.description,
-      pubDate: item.data.date,
-      link: `/${item.collection}/${item.slug}/`,
-    })),
+    items,
   });
 }

@@ -6,51 +6,369 @@ import ArrowCard from "@components/ArrowCard.astro";
 import { BLOG } from "@consts";
 
 const data = (await getCollection("blog"))
-  .filter(post => !post.data.draft)
+  .filter((post) => !post.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-  
+
 type Acc = {
   [year: string]: CollectionEntry<"blog">[];
-}
+};
 
 const posts = data.reduce((acc: Acc, post) => {
-    const year = post.data.date.getFullYear().toString();
-    if (!acc[year]) {
-      acc[year] = [];
-    }
-    acc[year].push(post);
-    return acc;
-  }, {});
+  const year = post.data.date.getFullYear().toString();
+  if (!acc[year]) {
+    acc[year] = [];
+  }
+  acc[year].push(post);
+  return acc;
+}, {});
 
-const years = Object.keys(posts).sort((a, b) => parseInt(b) - parseInt(a)); 
+const years = Object.keys(posts).sort((a, b) => parseInt(b) - parseInt(a));
+
+function stripMarkdown(md: string) {
+  return md
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]*`/g, " ")
+    .replace(/!\[.*?\]\(.*?\)/g, " ")
+    .replace(/\[([^\]]*)\]\(.*?\)/g, "$1")
+    .replace(/[#*_>~-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const searchIndex = data.map((post) => ({
+  slug: post.slug,
+  title: post.data.title,
+  description: post.data.description,
+  category: post.data.category ?? "",
+  tags: post.data.tags ?? [],
+  keywords: (post.data as any).keywords ?? [],
+  content: stripMarkdown(post.body).slice(0, 3000),
+}));
+
+const searchIndexJson = JSON.stringify(searchIndex).replace(/</g, "\\u003c");
 ---
 
 <PageLayout title={BLOG.TITLE} description={BLOG.DESCRIPTION}>
   <Container>
     <div class="space-y-10">
-      <div class="animate font-semibold text-black dark:text-white">
-        Blog
+      <div class="animate font-semibold text-black dark:text-white">Blog</div>
+
+      <div class="animate space-y-2 relative z-50">
+        <div class="flex gap-2">
+          <div class="relative flex-1">
+            <input
+              type="text"
+              id="blog-search"
+              placeholder="Search by title, content, tag, or category..."
+              autocomplete="off"
+              class="w-full rounded-lg border border-black/15 dark:border-white/20 bg-transparent px-4 py-2 text-sm outline-none focus:border-black/40 dark:focus:border-white/40 transition-colors"
+            />
+            <ul
+              id="search-suggestions"
+              class="hidden absolute z-50 mt-1 w-full rounded-lg border border-black/15 dark:border-white/20 bg-stone-100/95 dark:bg-stone-900/95 backdrop-blur-md shadow-2xl overflow-hidden isolate"
+            >
+            </ul>
+          </div>
+          <button
+            id="blog-search-button"
+            aria-label="Search posts"
+            class="rounded-lg border border-black/15 dark:border-white/20 bg-black/5 dark:bg-white/5 px-4 py-2 text-sm font-medium hover:bg-black/10 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-1.5 shrink-0 text-black dark:text-white"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+              <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+            </svg>
+            <span class="sr-only sm:not-sr-only">Search</span>
+          </button>
+        </div>
+        <p id="search-result-count" class="text-sm opacity-60 hidden"></p>
       </div>
-      <div class="space-y-4">
-        {years.map(year => (
-          <section class="animate space-y-4">
-            <div class="font-semibold text-black dark:text-white">
-              {year}
-            </div>
-            <div>
-              <ul class="flex flex-col gap-4">
-                {
-                  posts[year].map((post) => (
+
+      <div id="search-results" class="hidden">
+        <ul class="flex flex-col gap-4" id="search-results-list"></ul>
+        <p id="search-no-results" class="hidden text-sm opacity-75">
+          No posts matched your search.
+        </p>
+      </div>
+
+      <div id="year-groups" class="space-y-10">
+        {
+          years.map((year) => (
+            <section class="animate space-y-4">
+              <div class="font-semibold text-black dark:text-white">{year}</div>
+              <div>
+                <ul class="flex flex-col gap-4">
+                  {posts[year].map((post) => (
                     <li>
-                      <ArrowCard entry={post}/>
+                      <ArrowCard entry={post} />
                     </li>
-                  ))
-                }
-              </ul>
-            </div>
-          </section>
-        ))}
+                  ))}
+                </ul>
+              </div>
+            </section>
+          ))
+        }
       </div>
     </div>
   </Container>
 </PageLayout>
+
+<script
+  type="application/json"
+  id="search-index-data"
+  set:html={searchIndexJson}
+/>
+
+<script>
+  import Fuse from "fuse.js";
+
+  type SearchDoc = {
+    slug: string;
+    title: string;
+    description: string;
+    category: string;
+    tags: string[];
+    keywords: string[];
+    content: string;
+  };
+
+  function initBlogSearch() {
+    const dataEl = document.getElementById("search-index-data");
+    const input = document.getElementById(
+      "blog-search",
+    ) as HTMLInputElement | null;
+    const suggestionsEl = document.getElementById("search-suggestions");
+    const resultsContainer = document.getElementById("search-results");
+    const resultsList = document.getElementById("search-results-list");
+    const noResults = document.getElementById("search-no-results");
+    const resultCount = document.getElementById("search-result-count");
+    const yearGroups = document.getElementById("year-groups");
+    const searchButton = document.getElementById("blog-search-button");
+
+    if (
+      !dataEl ||
+      !input ||
+      !suggestionsEl ||
+      !resultsContainer ||
+      !resultsList ||
+      !noResults ||
+      !resultCount ||
+      !yearGroups ||
+      !searchButton
+    )
+      return;
+
+    const searchIndex: SearchDoc[] = JSON.parse(dataEl.textContent || "[]");
+
+    const fuse = new Fuse<SearchDoc>(searchIndex, {
+      keys: [
+        { name: "title", weight: 0.45 },
+        { name: "tags", weight: 0.25 },
+        { name: "category", weight: 0.15 },
+        { name: "keywords", weight: 0.1 },
+        { name: "description", weight: 0.03 },
+        { name: "content", weight: 0.02 },
+      ],
+      threshold: 0.2,
+      distance: 60,
+      ignoreLocation: true,
+      minMatchCharLength: 3,
+    });
+
+    function getSuggestions(
+      query: string,
+    ): { label: string; type: string; run: () => void }[] {
+      const q = query.toLowerCase();
+      const results: { label: string; type: string; run: () => void }[] = [];
+      const seen = new Set<string>();
+
+      searchIndex.forEach((doc) => {
+        if (doc.title.toLowerCase().includes(q) && !seen.has("t:" + doc.slug)) {
+          seen.add("t:" + doc.slug);
+          results.push({
+            label: doc.title,
+            type: "Post",
+            run: () => selectQuery(doc.title),
+          });
+        }
+        doc.tags.forEach((tag) => {
+          if (tag.toLowerCase().includes(q) && !seen.has("g:" + tag)) {
+            seen.add("g:" + tag);
+            results.push({
+              label: tag,
+              type: "Tag",
+              run: () => selectQuery(tag),
+            });
+          }
+        });
+        if (
+          doc.category &&
+          doc.category.toLowerCase().includes(q) &&
+          !seen.has("c:" + doc.category)
+        ) {
+          seen.add("c:" + doc.category);
+          results.push({
+            label: doc.category,
+            type: "Category",
+            run: () => selectQuery(doc.category),
+          });
+        }
+      });
+
+      return results.slice(0, 8);
+    }
+
+    let isSearching = false;
+
+    function selectQuery(value: string) {
+      input!.value = value;
+      hideSuggestions();
+      isSearching = true;
+      render(value);
+    }
+
+    function hideSuggestions() {
+      suggestionsEl!.classList.add("hidden");
+      suggestionsEl!.innerHTML = "";
+      if (isSearching) {
+        resultsContainer!.classList.remove("hidden");
+      } else {
+        resultsContainer!.classList.add("hidden");
+        yearGroups!.classList.remove("hidden");
+      }
+    }
+
+    function submitSearch() {
+      hideSuggestions();
+      const val = input!.value;
+      if (val.trim()) {
+        isSearching = true;
+        render(val);
+      } else {
+        isSearching = false;
+        render("");
+      }
+    }
+
+    function renderSuggestions(query: string) {
+      const trimmed = query.trim();
+      if (trimmed.length === 0) {
+        hideSuggestions();
+        return;
+      }
+
+      const suggestions = getSuggestions(trimmed);
+      if (suggestions.length === 0) {
+        hideSuggestions();
+        return;
+      }
+
+      suggestionsEl!.innerHTML = "";
+      suggestions.forEach((s) => {
+        const li = document.createElement("li");
+        li.className =
+          "px-4 py-2 text-sm cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-between gap-2";
+
+        const labelEl = document.createElement("span");
+        labelEl.textContent = s.label;
+
+        const typeEl = document.createElement("span");
+        typeEl.className = "text-xs opacity-50";
+        typeEl.textContent = s.type;
+
+        li.appendChild(labelEl);
+        li.appendChild(typeEl);
+        li.addEventListener("click", s.run);
+        suggestionsEl!.appendChild(li);
+      });
+
+      suggestionsEl!.classList.remove("hidden");
+      resultsContainer!.classList.add("hidden");
+    }
+
+    function render(query: string) {
+      const trimmed = query.trim();
+
+      if (!trimmed) {
+        resultsContainer!.classList.add("hidden");
+        yearGroups!.classList.remove("hidden");
+        resultCount!.classList.add("hidden");
+        return;
+      }
+
+      yearGroups!.classList.add("hidden");
+      resultCount!.classList.remove("hidden");
+
+      const matches = fuse.search(trimmed);
+      resultCount!.textContent = `${matches.length} result${matches.length === 1 ? "" : "s"} for "${trimmed}"`;
+
+      resultsList!.innerHTML = "";
+
+      if (matches.length === 0) {
+        noResults!.classList.remove("hidden");
+      } else {
+        noResults!.classList.add("hidden");
+        matches.forEach(({ item }: { item: SearchDoc }) => {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = `/blog/${item.slug}/`;
+          a.className =
+            "flex flex-col gap-1 rounded-lg border border-black/15 dark:border-white/20 p-4 transition-colors hover:bg-black/5 dark:hover:bg-white/10";
+
+          const titleEl = document.createElement("div");
+          titleEl.className = "font-semibold text-black dark:text-white";
+          titleEl.textContent = item.title;
+
+          const descEl = document.createElement("div");
+          descEl.className = "text-sm opacity-75 line-clamp-2";
+          descEl.textContent = item.description;
+
+          a.appendChild(titleEl);
+          a.appendChild(descEl);
+          li.appendChild(a);
+          resultsList!.appendChild(li);
+        });
+      }
+
+      if (suggestionsEl!.classList.contains("hidden")) {
+        resultsContainer!.classList.remove("hidden");
+      } else {
+        resultsContainer!.classList.add("hidden");
+      }
+    }
+
+    input.addEventListener("input", () => {
+      const val = input.value;
+      renderSuggestions(val);
+      if (!val.trim()) {
+        isSearching = false;
+        render("");
+      }
+    });
+
+    input.addEventListener("focus", () => {
+      if (input.value.trim()) renderSuggestions(input.value);
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        submitSearch();
+      }
+    });
+
+    searchButton.addEventListener("click", () => {
+      submitSearch();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (
+        !suggestionsEl!.contains(e.target as Node) &&
+        e.target !== input &&
+        !searchButton.contains(e.target as Node)
+      ) {
+        hideSuggestions();
+      }
+    });
+  }
+
+  document.addEventListener("astro:page-load", initBlogSearch);
+</script>
