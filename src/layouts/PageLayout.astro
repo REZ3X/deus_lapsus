@@ -24,32 +24,16 @@ const { title, description } = Astro.props;
     </main>
     <Footer />
 
-    <!-- botika webchat begin -->
+    <!-- botika webchat: preserve widget DOM across view transitions -->
     <script is:inline>
       (function() {
-        // Load botika script into <head> so it persists across view transitions
-        if (!document.getElementById("botika-widget-script")) {
-          var script = document.createElement("script");
-          script.id = "botika-widget-script";
-          script.src = "https://chat.botika.online/v3/widget/script.js";
-          script.onload = function() {
-            if (typeof botika !== "undefined" && botika.init) {
-              botika.init({ appId: "ksUzCm3" });
-            }
-          };
-          document.head.appendChild(script);
-        }
-
-        // Preserve the Botika widget DOM across Astro view transitions since DOMContentLoaded only fires once.
         if (!window.__botikaSwapListenerAdded) {
           window.__botikaSwapListenerAdded = true;
           document.addEventListener("astro:before-swap", function(e) {
-            // Move the widget container (#botika-widget) to the new body
             var widget = document.getElementById("botika-widget");
             if (widget) {
               e.newDocument.body.appendChild(widget);
             }
-            // Move the widget stylesheet to the new head
             var styles = document.querySelectorAll('link[href*="chat.botika.online"]');
             styles.forEach(function(link) {
               e.newDocument.head.appendChild(link);
@@ -58,6 +42,5 @@ const { title, description } = Astro.props;
         }
       })();
     </script>
-    <!-- botika webchat end -->
   </body>
 </html>

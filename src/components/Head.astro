@@ -183,3 +183,11 @@ function toggleTheme(dark) {
   document.addEventListener("astro:after-swap", () => init());
   preloadTheme();
 </script>
+
+<!-- botika webchat - loaded in head as blocking so DOMContentLoaded fires AFTER it -->
+<script is:inline src="https://chat.botika.online/v3/widget/script.js"></script>
+<script is:inline>
+  if (typeof botika !== "undefined" && botika.init) {
+    botika.init({ appId: "ksUzCm3" });
+  }
+</script>
